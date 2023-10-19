@@ -1,35 +1,51 @@
 import server from './server'
-//auto ejecutable
-(() => {
-    server.listen(3000, () => {
-        //routes
-        server.get('/', (req, res) => {
-            const responseObject = [];
-            for (let i = 0; i < 100; i ++) {
-                responseObject.push({
-                    id: i,
-                    name: `Product ${i}`,
-                    price: Math.floor(Math.random() * 99999)
-                });
-            }
-            res.status(200).json({msn: responseObject})
-        });
-        server.get('/users', (req, res) => {
-            const responseObject = [];
-            for (let i = 0; i < 10; i ++) {
-                responseObject.push({
-                    id: i,
-                    name: `User ${i}`,
-                    price: Math.floor(Math.random() * 99999)
-                });
-            }
-            res.status(200).json({msn: responseObject})
-        });
-        server.post('/users', (req, res) => {
-            console.log(req);
-            const { name, username, password } = req.body;
-            res.status(200).json({msn: `The user was created with the name: ${name} and the username: ${username}`})
-        });
-        console.log('Server is listening on port 3000');
+import UserRouter from './presentation/routers/user-router';
+import { MongoClient } from 'mongodb';
+import NoSQLWrapper from './data/interfaces/data-sources/no-sql-wrapper';
+import { Response } from 'express';
+
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+//mongo
+const getMongoDBClient = async (): Promise<NoSQLWrapper> => {
+    const uri = process.env.API_MONGO_URI || 'mongodb://localhost:27017';
+    const client = new MongoClient(uri);
+
+    client.connect();
+    const database = process.env.API_MONGO_DBNAME;
+    const db = client.db(database);
+    const CreateUser = async (user: any): Promise<any> => {
+        const result = await db.collection('users').insertOne(user);
+        console.log(`New user created with the following id: ${result.insertedId}`);
+        return {
+            acknowledged: result.acknowledged,
+            insertedId: result.insertedId,
+        };
+    }
+    const FindAllUsers = async (): Promise<any[]> => {
+        const result = await db.collection('users').find({}).toArray();
+        return result;
+    }
+    return {
+        CreateUser,
+        FindAllUsers
+    }
+}
+
+// const getPgDBClient = () => {
+
+// }
+// //todo homework
+// const getSqlServerClient = () => {
+
+// }
+
+(async() => {
+    const db = await getMongoDBClient();
+    server.use('/api', UserRouter(db));
+    const port = process.env.API_PORT || 3000;
+    server.listen(port, () => {
+        console.log(`Server is listening on port ${port}`);
     });
 })();
