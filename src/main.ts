@@ -9,11 +9,14 @@ if (process.env.NODE_ENV !== 'production') {
 }
 //mongo
 const getMongoDBClient = async (): Promise<NoSQLWrapper> => {
-    const uri = process.env.API_MONGO_URI || 'mongodb://localhost:27017';
+    //mongodb://admin:password@localhost:27017/db
+    const stringConnection = `mongodb://${process.env.API_MONGO_USERNAME}:${process.env.API_MONGO_PASSWORD}@localhost:27017`
+    const uri = stringConnection;
     const client = new MongoClient(uri);
 
     client.connect();
     const database = process.env.API_MONGO_DBNAME;
+    
     const db = client.db(database);
     const CreateUser = async (user: any): Promise<any> => {
         const result = await db.collection('users').insertOne(user);

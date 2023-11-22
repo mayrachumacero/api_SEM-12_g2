@@ -1,16 +1,16 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:3.0
-    container_name: mongodb
+  db:
+    image: mongo:3.6
+    container_name: db
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: rootuser
       MONGO_INITDB_ROOT_PASSWORD: rootpass
     volumes:
-      - mongodb_data:/data/db
+      - db_data:/data/db
 
 volumes:
-  mongodb_data:
+  db_data:
