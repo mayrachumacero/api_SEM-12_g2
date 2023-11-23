@@ -3,8 +3,10 @@
   "version": "0.0.3",
   "description": "",
   "scripts": {
+    "build": "tsc",
     "dev:build": "tsc",
-    "dev:serve": "nodemon -e js -w dist ./dist/src/main.js"
+    "dev:serve": "nodemon -e js -w dist ./dist/src/main.js",
+    "start": ": node ./dist/src/main.js"
   },
   "keywords": [],
   "author": "",
