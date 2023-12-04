@@ -20,6 +20,7 @@ if not already installed globally, run
 npm install -g nodemon typescript
 ```
 ## Running the Server
+## hi friends
 Build a server then , execute commands to build and serve the application.
 ```
 npm run dev:build
